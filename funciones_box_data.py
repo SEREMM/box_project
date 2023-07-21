@@ -51,16 +51,16 @@ def one_hot_encoder(df, encoder1, encoder2, encoder3):
 
   columns = ['stance_b1', 'stance_b2']
   for i in columns:
-    one_hot_vectors = encoder3.transform(df[i])
-    feature_names = encoder3.get_feature_names_out()
+    one_hot_vectors = encoder2.transform(df[i])
+    feature_names = encoder2.get_feature_names_out()
     temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
     df_1 = pd.concat([df_1,temp], axis=1)
     df_1.drop(columns=i, inplace=True)
 
   columns = ['boxstyle_b1', 'boxstyle_b2']
   for i in columns:
-    one_hot_vectors = encoder2.transform(df[i])
-    feature_names = encoder2.get_feature_names_out()
+    one_hot_vectors = encoder3.transform(df[i])
+    feature_names = encoder3.get_feature_names_out()
     temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
     df_1 = pd.concat([df_1,temp], axis=1)
     df_1.drop(columns=i, inplace=True)
