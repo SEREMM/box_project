@@ -95,8 +95,7 @@ class Model_applied(BaseEstimator, TransformerMixin):
     df_pred = pd.DataFrame()
     pred_new = self.model.predict(X)
     probabilities = self.model.predict_proba(X)
-    df_pred['model_pred'] = pred_new
-    df_pred['boxer1_pred'] = [i.astype(str).replace('-1','loss').replace('1','win') for i in list(pred_new)]
+    df_pred['boxer1_pred'] = pred_new
     df_pred['prob_win'] = probabilities[:,1]
     df_pred['prob_loss'] = probabilities[:,0]
     return df_pred
