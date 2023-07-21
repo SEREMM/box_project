@@ -103,11 +103,11 @@ class Model_applied(BaseEstimator, TransformerMixin):
 
 def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figsize=(5,3)):
   dfx = df_cluster.copy()
-  dfx['true_res'] = y_true
-  dfx['pred_res'] = y_pred
-  dfx['goodpred'] = (dfx.true_res == dfx.pred_res)
-  dfx['prob_loss'] = prob_loss
-  dfx['prob_win'] = prob_win
+  dfx['true_res'] = y_true.values
+  dfx['pred_res'] = y_pred.values
+  dfx['goodpred'] = (dfx.true_res == dfx.pred_res).values
+  dfx['prob_loss'] = prob_loss.values
+  dfx['prob_win'] = prob_win.values
 
   # Count the occurrences of each cluster and goodpred combination
   counts = dfx.groupby(['cluster', 'goodpred']).size().reset_index(name='count')
@@ -126,7 +126,6 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   print(titulo+'\n'+(len(titulo)*'='))
   perc_false_per_true_by_cluster = counts.groupby('cluster').apply(lambda x: x[x['goodpred'] == False]['count'].sum() / x[x['goodpred'] == True]['count'].sum())
   print(perc_false_per_true_by_cluster)
-
 
   fig,ax=plt.subplots(figsize=figsize)
   sns.histplot(dfx[dfx.goodpred==True].prob_win)
