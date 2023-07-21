@@ -39,44 +39,31 @@ def feat_eng(df):
   return df
 
 
-def one_hot_encode_with_custom_order(df):
-  lista = [
-      ['c_f', '/content/lista_acomodo_regiones.txt', ''],
-      ['region_b1', '/content/lista_acomodo_regiones.txt', '.1'],
-      ['region_b2', '/content/lista_acomodo_regiones.txt', '.2'],
-      ['boxstyle_b1', '/content/lista_estilos_pelea.txt', ''],
-      ['boxstyle_b2', '/content/lista_estilos_pelea.txt', '.1'],
-      ['stance_b1', '/content/lista_postura.txt', ''],
-      ['stance_b2', '/content/lista_postura.txt', '.1']
-  ]
+def one_hot_encoder(df, encoder1, encoder2, encoder3):
   df_1 = df.copy()
+  columns = ['c_f', 'region_b1', 'region_b2']
+  for i in columns:
+    one_hot_vectors = encoder1.transform(df[i])
+    feature_names = encoder1.get_feature_names_out()
+    temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+    df_1 = pd.concat([df_1,temp], axis=1)
+    df_1.drop(columns=i, inplace=True)
 
-  for i in lista:
-    col = i[0]
-    order = i[1]
-    suf = i[2]
+  columns = ['stance_b1', 'stance_b2']
+  for i in columns:
+    one_hot_vectors = encoder3.transform(df[i])
+    feature_names = encoder3.get_feature_names_out()
+    temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+    df_1 = pd.concat([df_1,temp], axis=1)
+    df_1.drop(columns=i, inplace=True)
 
-    with open(f'fitted_vectorizer_{col}_.pkl', 'rb') as file:
-      vectorizer = pkl.load(file)
-
-    one_hot_vectors = vectorizer.transform(df[col])
-    feature_names = vectorizer.get_feature_names_out()
-
-    with open(order, 'r') as file:
-        custom_order = file.read()
-
-    custom_order = [i for i in custom_order.split(',')][:-1]
-    if suf == '':
-      print(f'{col} : sin sufijo')
-    else:
-      custom_order = [i+suf for i in custom_order]
-      print(f'{col} : sufijo : {suf}')
-
-    temp = pd.DataFrame(one_hot_vectors.toarray(), columns=custom_order)
-    ordered_temp = temp[custom_order]
-
-    df_1 = pd.concat([df_1, ordered_temp], axis=1)
-    df_1.drop(columns=col, inplace=True)
+  columns = ['boxstyle_b1', 'boxstyle_b2']
+  for i in columns:
+    one_hot_vectors = encoder2.transform(df[i])
+    feature_names = encoder2.get_feature_names_out()
+    temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+    df_1 = pd.concat([df_1,temp], axis=1)
+    df_1.drop(columns=i, inplace=True)
 
   return df_1
 
