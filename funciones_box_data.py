@@ -157,9 +157,8 @@ class Data_clusterer(BaseEstimator, TransformerMixin):
 
 
 class Model_applied(BaseEstimator, TransformerMixin):
-  def __init__(self, model, pelea):
+  def __init__(self, model):
     self.model = model
-    self.pelea = pelea
 
   def fit(self, X, y=None):
     return self
