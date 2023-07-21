@@ -101,13 +101,13 @@ class Model_applied(BaseEstimator, TransformerMixin):
     return df_pred
 
 
-def check_fails_and_probas(df, y_true, y_pred, prob_loss, prob_win, figsize=(5,3)):
-  dfx = xl_test_clus.copy()
-  dfx['true_res'] = yl_test.result.values
-  dfx['pred_res'] = yl_test_pred
+def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figsize=(5,3)):
+  dfx = df_cluster.copy()
+  dfx['true_res'] = y_true
+  dfx['pred_res'] = y_pred
   dfx['goodpred'] = (dfx.true_res == dfx.pred_res)
-  dfx['prob_loss'] = probabilities[:,0]
-  dfx['prob_win'] = probabilities[:,1]
+  dfx['prob_loss'] = prob_loss
+  dfx['prob_win'] = prob_win
 
   # Count the occurrences of each cluster and goodpred combination
   counts = dfx.groupby(['cluster', 'goodpred']).size().reset_index(name='count')
