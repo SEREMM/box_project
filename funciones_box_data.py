@@ -137,3 +137,5 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   sns.histplot(dfx[dfx.goodpred==False].prob_win)
   ax.set_title('Cantidad de False según win pred value')
   plt.show()
+
+  return dfx
