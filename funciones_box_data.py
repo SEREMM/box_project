@@ -6,13 +6,23 @@ import seaborn as sns
 
 from sklearn.model_selection import cross_validate
 
-def cross_val(model, x_train, x_val, y_train, y_val, cv=5):
+def cross_val(model, x_1, x_2, y_1, y_2, cv=5):
+  '''
+  Función para hacer cross validate de modelos ml.
+  :model: modelo a revisar.
+  :x_1: data x 1 (entrenamiento)
+  :x_2: data x 2 (testeo)
+  :y_1: data y 1 (entrenamiento)
+  :y_2: data y 2 (testeo)
+  :cv: cross val folders, default=5
+  :print: métricas de resultados 
+  '''
   try:
-    X = pd.concat([x_train, x_val])
-    y = pd.concat([y_train, y_val])
+    X = pd.concat([x_1, x_2])
+    y = pd.concat([y_1, y_2])
   except TypeError:
-    X = pd.concat([pd.DataFrame(x_train), pd.DataFrame(x_val)])
-    y = pd.concat([y_train, y_val])
+    X = pd.concat([pd.DataFrame(x_1), pd.DataFrame(x_2)])
+    y = pd.concat([y_1, y_2])
 
   cv_results = cross_validate(model, X.values, y.values, cv=cv)
 
@@ -25,6 +35,11 @@ def cross_val(model, x_train, x_val, y_train, y_val, cv=5):
 import pickle as pkl
 
 def feat_eng(df):
+  '''
+  Feature engineering values.
+  :df: Dataframe sobre el cual agregar las características
+  :return: df con las características
+  '''
   df = df.copy()
   df['b1_momios_menores'] = np.where(df.b1_bet < df.b2_bet, 1, 0)
   df['b1_mas_wins'] = np.where(df.b1_w > df.b2_w, 1, 0)
@@ -40,6 +55,14 @@ def feat_eng(df):
 
 
 def one_hot_encoder(df, encoder1, encoder2, encoder3):
+  '''
+  Vectorizador de string features.
+  :df: dataframe base
+  :encoder1: vectorizador regiones
+  :encoder2: vectorizador posturas
+  :encoder3: vectorizador estilos
+  :return: df con las columnas vectorizadas
+  '''
   df_1 = df.copy()
   columns = ['c_f', 'region_b1', 'region_b2']
   for i in columns:
