@@ -80,7 +80,7 @@ class One_hot_encoder(BaseEstimator, TransformerMixin):
       df_1 = X.copy()
       columns = ['c_f', 'region_b1', 'region_b2']
       for i in columns:
-        one_hot_vectors = self.encoder1.transform(df[i])
+        one_hot_vectors = self.encoder1.transform(df_1[i])
         feature_names = self.encoder1.get_feature_names_out()
         temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
         df_1 = pd.concat([df_1,temp], axis=1)
@@ -88,7 +88,7 @@ class One_hot_encoder(BaseEstimator, TransformerMixin):
 
       columns = ['stance_b1', 'stance_b2']
       for i in columns:
-        one_hot_vectors = self.encoder2.transform(df[i])
+        one_hot_vectors = self.encoder2.transform(df_1[i])
         feature_names = self.encoder2.get_feature_names_out()
         temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
         df_1 = pd.concat([df_1,temp], axis=1)
@@ -96,7 +96,7 @@ class One_hot_encoder(BaseEstimator, TransformerMixin):
 
       columns = ['boxstyle_b1', 'boxstyle_b2']
       for i in columns:
-        one_hot_vectors = self.encoder3.transform(df[i])
+        one_hot_vectors = self.encoder3.transform(df_1[i])
         feature_names = self.encoder3.get_feature_names_out()
         temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
         df_1 = pd.concat([df_1,temp], axis=1)
