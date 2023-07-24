@@ -10,12 +10,12 @@ def cross_val(model, x_1, x_2, y_1, y_2, cv=5):
   '''
   Función para hacer cross validate de modelos ml.
   :model: modelo a revisar.
-  :x_1: data x 1 (entrenamiento)
-  :x_2: data x 2 (testeo)
-  :y_1: data y 1 (entrenamiento)
-  :y_2: data y 2 (testeo)
-  :cv: cross val folders, default=5
-  :print: métricas de resultados 
+  :x_1: data x 1 (entrenamiento).
+  :x_2: data x 2 (testeo).
+  :y_1: data y 1 (entrenamiento).
+  :y_2: data y 2 (testeo).
+  :cv: cross val folders, default=5.
+  :print: métricas de resultados.
   '''
   try:
     X = pd.concat([x_1, x_2])
@@ -37,8 +37,8 @@ import pickle as pkl
 def feat_eng(df):
   '''
   Feature engineering values.
-  :df: Dataframe sobre el cual agregar las características
-  :return: df con las características
+  :df: Dataframe sobre el cual agregar las características.
+  :return: df con las características.
   '''
   df = df.copy()
   df['b1_momios_menores'] = np.where(df.b1_bet < df.b2_bet, 1, 0)
@@ -54,53 +54,73 @@ def feat_eng(df):
   return df
 
 
-def one_hot_encoder(df, encoder1, encoder2, encoder3):
-  '''
-  Vectorizador de string features.
-  :df: dataframe base
-  :encoder1: vectorizador regiones
-  :encoder2: vectorizador posturas
-  :encoder3: vectorizador estilos
-  :return: df con las columnas vectorizadas
-  '''
-  df_1 = df.copy()
-  columns = ['c_f', 'region_b1', 'region_b2']
-  for i in columns:
-    one_hot_vectors = encoder1.transform(df[i])
-    feature_names = encoder1.get_feature_names_out()
-    temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
-    df_1 = pd.concat([df_1,temp], axis=1)
-    df_1.drop(columns=i, inplace=True)
-
-  columns = ['stance_b1', 'stance_b2']
-  for i in columns:
-    one_hot_vectors = encoder2.transform(df[i])
-    feature_names = encoder2.get_feature_names_out()
-    temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
-    df_1 = pd.concat([df_1,temp], axis=1)
-    df_1.drop(columns=i, inplace=True)
-
-  columns = ['boxstyle_b1', 'boxstyle_b2']
-  for i in columns:
-    one_hot_vectors = encoder3.transform(df[i])
-    feature_names = encoder3.get_feature_names_out()
-    temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
-    df_1 = pd.concat([df_1,temp], axis=1)
-    df_1.drop(columns=i, inplace=True)
-
-  return df_1
-
-
 from sklearn.base import BaseEstimator, TransformerMixin
+
+
+class One_hot_encoder(BaseEstimator, TransformerMixin):
+    def __init__(self, encoder1, encoder2, encoder3):
+      '''
+      Vectorizador de string features.
+      :encoder1: vectorizador regiones.
+      :encoder2: vectorizador posturas.
+      :encoder3: vectorizador estilos.
+      '''
+      self.encoder1 = encoder1
+      self.encoder2 = encoder2
+      self.encoder3 = encoder3
+
+    def fit(self, X, y=None):
+      return self
+
+    def transform(self, X):
+      '''
+      :X: dataframe base.
+      :return: df con las columnas vectorizadas.
+      '''
+      df_1 = X.copy()
+      columns = ['c_f', 'region_b1', 'region_b2']
+      for i in columns:
+        one_hot_vectors = self.encoder1.transform(df[i])
+        feature_names = self.encoder1.get_feature_names_out()
+        temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+        df_1 = pd.concat([df_1,temp], axis=1)
+        df_1.drop(columns=i, inplace=True)
+
+      columns = ['stance_b1', 'stance_b2']
+      for i in columns:
+        one_hot_vectors = self.encoder2.transform(df[i])
+        feature_names = self.encoder2.get_feature_names_out()
+        temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+        df_1 = pd.concat([df_1,temp], axis=1)
+        df_1.drop(columns=i, inplace=True)
+
+      columns = ['boxstyle_b1', 'boxstyle_b2']
+      for i in columns:
+        one_hot_vectors = self.encoder3.transform(df[i])
+        feature_names = self.encoder3.get_feature_names_out()
+        temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+        df_1 = pd.concat([df_1,temp], axis=1)
+        df_1.drop(columns=i, inplace=True)
+
+      return df_1
+
 
 class Data_clusterer(BaseEstimator, TransformerMixin):
     def __init__(self, model):
+        '''
+        Adhiere cluster creado por modelo seleccionado a dataframe base.
+        :model: Modelo cluster.
+        '''
         self.model = model
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X):
+        '''
+        :X: dataframe base.
+        :return: df base con columna cluster adherida.
+        '''
         clusters = self.model.predict(X)
         clusters = pd.Series(clusters, index=X.index, name='cluster')
         temp = X.merge(clusters, how='outer', left_index=True, right_index=True)
@@ -109,12 +129,20 @@ class Data_clusterer(BaseEstimator, TransformerMixin):
 
 class Model_applied(BaseEstimator, TransformerMixin):
   def __init__(self, model):
+    '''
+    Adhiere predicción de modelo seleccionado a df y probabilidades.
+    :model: Modelo clasificación escogido.
+    '''
     self.model = model
 
   def fit(self, X, y=None):
     return self
 
   def transform(self, X):
+    '''
+    :X: dataframe base.
+    :return: df base con columna predicción y columnas probabilidades.
+    '''
     df_pred = pd.DataFrame()
     pred_new = self.model.predict(X)
     probabilities = self.model.predict_proba(X)
@@ -125,6 +153,19 @@ class Model_applied(BaseEstimator, TransformerMixin):
 
 
 def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figsize=(5,3)):
+  '''
+  Función para revisar errores, aciertos y probabilidades de modelo, según sus respectivos cluster.
+  :df_cluster: dataframe con columna de clusters.
+  :y_true: y verdadero.
+  :y_pred: y predicción.
+  :prob_loss: probabilidad boxer 1 pierde.
+  :prob_win: probabilidad boxer 1 gana.
+  :figsize=(5,3): figsize de las gráficas.
+  :return: df cluster con columnas true res, pred res, goodpred, prob loss, prob win.
+  :plot: conteo de falsos por verdaderos según clusters, histograma de verdaderos y falsos\
+         según la probabilidad generada.
+  :print: porcentaje de falsos por verdaderos según cada cluster.
+  '''
   dfx = df_cluster.copy()
   dfx['true_res'] = y_true.values
   dfx['pred_res'] = y_pred.values
@@ -155,7 +196,7 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   ax.set_title('Cantidad de Trues según win pred value')
   plt.show()
 
-  fig,ax=plt.subplots(figsize=(5,3))
+  fig,ax=plt.subplots(figsize=figsize)
   sns.histplot(dfx[dfx.goodpred==False].prob_win)
   ax.set_title('Cantidad de False según win pred value')
   plt.show()
