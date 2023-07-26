@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pickle as pkl
 
 
 from sklearn.model_selection import cross_validate
@@ -32,8 +33,6 @@ def cross_val(model, x_1, x_2, y_1, y_2, cv=5):
   print(f'Test mean score: {cv_results["test_score"].mean()}')
 
 
-import pickle as pkl
-
 def feat_eng(df):
   '''
   Feature engineering values.
@@ -41,15 +40,24 @@ def feat_eng(df):
   :return: df con las características.
   '''
   df = df.copy()
+  suma_peleas_b1 = df.b1_w + df.b1_d + df.b1_l
+  suma_peleas_b2 = df.b2_w + df.b2_d + df.b2_l
   df['b1_momios_menores'] = np.where(df.b1_bet < df.b2_bet, 1, 0)
-  df['b1_mas_wins'] = np.where(df.b1_w > df.b2_w, 1, 0)
-  df['b1_menos_draws'] = np.where(df.b1_d < df.b2_d, 1, 0)
-  df['b1_menos_loss'] = np.where(df.b1_l < df.b2_l, 1, 0)
+  df['b1_bet_inversa'] = abs(df.b1_bet - 1)
+  df['b2_bet_inversa'] = abs(df.b2_bet - 1)
+  df = df.drop(columns=['b1_bet','b2_bet'])
+  df['b1_mas_peleas'] = np.where(suma_peleas_b1 > suma_peleas_b2, 1, 0)
+  df['b1_menos_peleas'] = np.where(suma_peleas_b1 < suma_peleas_b2, -1, 0)
+  df['b1_mas_win_perc'] = np.where((df.b1_w / suma_peleas_b1) > (df.b2_w / suma_peleas_b2), 1, 0)
+  df['b1_menos_win_perc'] = np.where((df.b1_w / suma_peleas_b1) < (df.b2_w / suma_peleas_b2), -1, 0)
+  df['b1_menos_loss_perc'] = np.where((df.b1_l / suma_peleas_b1) < (df.b2_l / suma_peleas_b2), 1, 0)
+  df['b1_mas_loss_perc'] = np.where((df.b1_l / suma_peleas_b1) > (df.b2_l / suma_peleas_b2), -1, 0)
   df['b1_mas_ko_perc'] = np.where((df.b1_wk / df.b1_w) > (df.b2_wk / df.b2_w), 1, 0)
+  df['b1_menos_ko_perc'] = np.where((df.b1_wk / df.b1_w) < (df.b2_wk / df.b2_w), -1, 0)
   df['b1_invicto'] = np.where(df.b1_l <= 0, 1, 0)
   df['b2_invicto'] = np.where(df.b2_l <= 0, -1, 0)
-  df['b1_mas_3_loss'] = np.where(df.b1_l > 3, -1, 0)
-  df['b2_mas_3_loss'] = np.where(df.b2_l > 3, 1, 0)
+  df['b1_local'] = np.where(df.c_f == df.region_b1, 1, 0)
+  df['b2_local'] = np.where(df.c_f == df.region_b2, -1, 0)
 
   return df
 
