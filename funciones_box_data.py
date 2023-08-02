@@ -65,7 +65,7 @@ def feat_eng(df):
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class One_hot_encoder(BaseEstimator, TransformerMixin):
+class features_encoder(BaseEstimator, TransformerMixin):
     def __init__(self, encoder1, encoder2, encoder3):
       '''
       Vectorizador de string features.
