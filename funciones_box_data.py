@@ -210,3 +210,69 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   plt.show()
 
   return dfx
+
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+
+
+def plot_clusters(clusters, dim_reduct_values, cmap="Set2", figsize=(5,3)):
+    """
+    Plots the projection of the features colored by clusters.
+
+    Parameters:
+        clusters (numpy array): The clusters of the data.
+        dim_reduct_values (numpy array): The dimensionality reducted values of features.
+        cmap (str or colormap, optional): The colormap for coloring clusters. Default is "Set2".
+        figsize (tuple, optional): The size of the plot. default is (5,3).
+
+    Returns:
+        None (displays the plot).
+    """
+    cmap = plt.get_cmap(cmap)
+
+    n_clusters = np.unique(clusters).shape[0]
+
+    fig = plt.figure(figsize=figsize)
+    # Plot the dimensionality-reduced features on a 2D plane
+    plt.scatter(umap_features[:, 0], umap_features[:, 1],
+                c=[cmap(x/n_clusters) for x in clusters], s=40, alpha=.4)
+    plt.title('UMAP projection of questions, colored by clusters', fontsize=14)
+    plt.show()
+
+
+def find_optimal_clusters(data, scaler=StandardScaler(), max_clusters=10, clustering_model=KMeans, figsize=(5,3)):
+    """
+    Function to find the optimal number of clusters using the Elbow Method.
+
+    Parameters:
+        data (numpy.ndarray or pandas.DataFrame): The dataset to be analyzed.
+        scaler (optional): The scaler for the values. Default is StandardScaler.
+        max_clusters (int, optional): The maximum number of clusters to consider.
+        clustering_model (optional): The clustering model to use. Default is KMeans.
+        figsize (tuple, optional): The size of the plot. Default is (5,3).
+
+    Returns:
+        None (plots the Elbow Method graph).
+    """
+    # Standardize the data to have zero mean and unit variance
+    standardized_data = scaler.fit_transform(data)
+
+    # Initialize an empty list to store the within-cluster sum of squares
+    wcss = []
+
+    # Calculate WCSS for different number of clusters from 1 to max_clusters
+    for num_clusters in range(1, max_clusters + 1):
+        model = clustering_model(n_clusters=num_clusters, random_state=42)
+        model.fit(standardized_data)
+        wcss.append(model.inertia_)  # Sum of squared distances to the closest cluster center
+
+    # Plot the Elbow Method graph
+    plt.figure(figsize=figsize)
+    plt.plot(range(1, max_clusters + 1), wcss, marker='o')
+    plt.xlabel('Number of Clusters')
+    plt.ylabel('Within-Cluster Sum of Squares (WCSS)')
+    plt.title('Elbow Method to Find Optimal Number of Clusters')
+    plt.xticks(np.arange(1, max_clusters + 1))
+    plt.grid()
+    plt.show()
