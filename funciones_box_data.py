@@ -201,18 +201,23 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
 
   fig,ax=plt.subplots(figsize=figsize)
   sns.histplot(dfx[dfx.goodpred==True].prob_win)
-  ax.set_title('Cantidad de Trues según win pred value')
-  plt.show()
-
-  fig,ax=plt.subplots(figsize=figsize)
-  sns.histplot(dfx[dfx.goodpred==False].prob_win)
-  ax.set_title('Cantidad de False según win pred value')
-  plt.show()
-
-  fig,ax=plt.subplots(figsize=(5,3))
-  sns.histplot(dfx[dfx.goodpred==True].prob_win)
   sns.histplot(dfx[dfx.goodpred==False].prob_win)
   ax.set_title('Comparacion win / false pred value')
+  plt.show()
+
+  a = round(dfx.prob_win,1)
+  b = dfx[['goodpred','prob_win']]
+  b['prob_win'] = a
+  b = pd.get_dummies(b, columns=['goodpred'])
+  b = b.groupby('prob_win').sum()
+  b['false_over_true'] = round(b.goodpred_False / b.goodpred_True, 2)
+
+  fig, ax = plt.subplots(figsize=figsize)
+  sns.barplot(x=b.index, y=b.false_over_true)
+  ax.set_ylim(0,1)
+  plt.ylabel('Porcentaje falsos sobre verdaderos')
+  plt.xlabel('Proabilidad win ex.(0.4 = de 0.36 a 0.45)')
+  plt.title('Cálculo falsos sobre verdaderos según prob win')
   plt.show()
 
   return dfx
