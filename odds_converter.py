@@ -23,7 +23,7 @@ def function_odds(odds, func='american'):
         else:
           res = i
           lista_dec.append(res)
-        print(f'posicion {count}: valor original: {i}, valor decimal apuesta: {res}\n')
+        print(f'Valor {count + 1} / valor original: {i}, valor decimal apuesta: {res}\n')
         count += 1
       return lista_dec
     lista = odds_american_to_decimal(odds)
@@ -35,7 +35,7 @@ def function_odds(odds, func='american'):
       for i in odds:
         res = (i) + 1
         lista_dec.append(res)
-        print(f'posicion {count}: valor original: {i}, valor decimal apuesta: {res}\n')
+        print(f'Valor {count + 1} / valor original: {i}, valor decimal apuesta: {res}\n')
         count += 1
       return lista_dec
     lista = odds_fractional_to_decimal(odds)
