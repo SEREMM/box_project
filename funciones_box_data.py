@@ -220,13 +220,13 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   b['prob_win'] = a
   b = pd.get_dummies(b, columns=['goodpred'])
   b = b.groupby('prob_win').sum()
-  b['false_over_true'] = round(b.goodpred_False / b.goodpred_True, 2)
+  b['false_over_total'] = round(b.goodpred_False / (b.goodpred_False + b.goodpred_True), 2)
 
   fig, ax = plt.subplots(figsize=figsize)
-  sns.barplot(x=b.index, y=b.false_over_true)
+  sns.barplot(x=b.index, y=b.false_over_total)
   ax.set_ylim(0,1)
-  plt.ylabel('Porcentaje falsos sobre verdaderos')
-  plt.xlabel('Proabilidad win ex.(0.4 = de 0.36 a 0.45)')
+  plt.ylabel('Porcentaje falsos sobre (verdaderos + falsos)')
+  plt.xlabel('Proabilidad win ex.(0.5 = de 0.46 a 0.55)')
   plt.title('Cálculo falsos sobre verdaderos según prob win')
   plt.show()
 
