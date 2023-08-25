@@ -256,9 +256,9 @@ def plot_clusters(clusters, dim_reduct_values, cmap="Set2", figsize=(5,3)):
 
     fig = plt.figure(figsize=figsize)
     # Plot the dimensionality-reduced features on a 2D plane
-    plt.scatter(umap_features[:, 0], umap_features[:, 1],
+    plt.scatter(dim_reduct_values[:, 0], dim_reduct_values[:, 1],
                 c=[cmap(x/n_clusters) for x in clusters], s=40, alpha=.4)
-    plt.title('UMAP projection of questions, colored by clusters', fontsize=14)
+    plt.title('dim reduct projection of values, colored by clusters', fontsize=14)
     plt.show()
 
 
