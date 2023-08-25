@@ -231,13 +231,14 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
 
   clusters = dfx.cluster.unique()
   for i in clusters:
-    temp1 = dfx[['goodpred','cluster','prob_win']].query(f'cluster == {i}')
+    temp1 = dfx.copy()
+    temp1 = temp1[['goodpred','cluster','prob_win']].query(f'cluster == {i}')
     temp1['prob_win'] = round(temp1.prob_win, 1)
     temp1 = pd.get_dummies(temp1, columns=['goodpred'])
     temp1 = temp1.groupby(['cluster','prob_win']).sum().reset_index()
     temp1['false_over_total'] = temp1.goodpred_False / (temp1.goodpred_True + temp1.goodpred_False)
   
-    fig,ax = plt.subplots(figsize=(5,3))
+    fig,ax = plt.subplots(figsize=(figsize))
     sns.barplot(data=temp1, x='prob_win', y='false_over_total')
     ax.set_ylim(0,1)
     plt.xlabel('Prob. Win ex.(0.5 = from 0.46 to 0.55)')
