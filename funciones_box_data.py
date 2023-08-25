@@ -69,9 +69,10 @@ class Features_encoder(BaseEstimator, TransformerMixin):
     def __init__(self, encoder1=0, encoder2=0, encoder3=0):
       '''
       Vectorizador de string features.
-      :encoder1: vectorizador regiones.
-      :encoder2: vectorizador posturas.
-      :encoder3: vectorizador estilos.
+        :encoder1(defaul 0): vectorizador regiones [c_f, region_b1, region_b2] (if pass encoder, else omit).
+        :encoder2(default 0): vectorizador posturas [stance_b1, stance_b2] (if pass encoder, else omit).
+        :encoder3(default 0): vectorizador estilos [boxstyle_b1, boxstyle_b2] (if pass encoder, else omit).
+      Returns: Dataframe with vectorized values
       '''
       self.encoder1 = encoder1
       self.encoder2 = encoder2
