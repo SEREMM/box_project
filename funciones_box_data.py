@@ -65,8 +65,8 @@ def feat_eng(df):
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class features_encoder(BaseEstimator, TransformerMixin):
-    def __init__(self, encoder1, encoder2, encoder3):
+class Features_encoder(BaseEstimator, TransformerMixin):
+    def __init__(self, encoder1=0, encoder2=0, encoder3=0):
       '''
       Vectorizador de string features.
       :encoder1: vectorizador regiones.
@@ -86,29 +86,38 @@ class features_encoder(BaseEstimator, TransformerMixin):
       :return: df con las columnas vectorizadas.
       '''
       df_1 = X.copy()
-      columns = ['c_f', 'region_b1', 'region_b2']
-      for i in columns:
-        one_hot_vectors = self.encoder1.transform(df_1[i])
-        feature_names = self.encoder1.get_feature_names_out()
-        temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
-        df_1 = pd.concat([df_1,temp], axis=1)
-        df_1.drop(columns=i, inplace=True)
+      if self.encoder1 == 0:
+        continue
+      else:
+        columns = ['c_f', 'region_b1', 'region_b2']
+        for i in columns:
+          one_hot_vectors = self.encoder1.transform(df_1[i])
+          feature_names = self.encoder1.get_feature_names_out()
+          temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+          df_1 = pd.concat([df_1,temp], axis=1)
+          df_1.drop(columns=i, inplace=True)
 
-      columns = ['stance_b1', 'stance_b2']
-      for i in columns:
-        one_hot_vectors = self.encoder2.transform(df_1[i])
-        feature_names = self.encoder2.get_feature_names_out()
-        temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
-        df_1 = pd.concat([df_1,temp], axis=1)
-        df_1.drop(columns=i, inplace=True)
+      if self.encoder2 == 0:
+        continue
+      else:
+        columns = ['stance_b1', 'stance_b2']
+        for i in columns:
+          one_hot_vectors = self.encoder2.transform(df_1[i])
+          feature_names = self.encoder2.get_feature_names_out()
+          temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+          df_1 = pd.concat([df_1,temp], axis=1)
+          df_1.drop(columns=i, inplace=True)
 
-      columns = ['boxstyle_b1', 'boxstyle_b2']
-      for i in columns:
-        one_hot_vectors = self.encoder3.transform(df_1[i])
-        feature_names = self.encoder3.get_feature_names_out()
-        temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
-        df_1 = pd.concat([df_1,temp], axis=1)
-        df_1.drop(columns=i, inplace=True)
+      if self.encoder3 == 0:
+        continue
+      else:
+        columns = ['boxstyle_b1', 'boxstyle_b2']
+        for i in columns:
+          one_hot_vectors = self.encoder3.transform(df_1[i])
+          feature_names = self.encoder3.get_feature_names_out()
+          temp = pd.DataFrame(one_hot_vectors.toarray(), columns=feature_names, index=df_1.index)
+          df_1 = pd.concat([df_1,temp], axis=1)
+          df_1.drop(columns=i, inplace=True)
 
       return df_1
 
