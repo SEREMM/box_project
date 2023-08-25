@@ -180,8 +180,7 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   :prob_win: probabilidad boxer 1 gana.
   :figsize=(5,3): figsize de las gráficas.
   :return: df cluster con columnas true res, pred res, goodpred, prob loss, prob win.
-  :plot: conteo de falsos por verdaderos según clusters, histograma de verdaderos y falsos\
-         según la probabilidad generada.
+  :plot: conteo de falsos por verdaderos según clusters, Perc false / total by Prob win, Perc. false / total for the clusters.
   :print: porcentaje de falsos por verdaderos según cada cluster.
   '''
   dfx = df_cluster.copy()
@@ -209,11 +208,11 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   perc_false_per_true_by_cluster = counts.groupby('cluster').apply(lambda x: x[x['goodpred'] == False]['count'].sum() / x[x['goodpred'] == True]['count'].sum())
   print(perc_false_per_true_by_cluster)
 
-  fig,ax=plt.subplots(figsize=figsize)
-  sns.histplot(dfx[dfx.goodpred==True].prob_win)
-  sns.histplot(dfx[dfx.goodpred==False].prob_win)
-  ax.set_title('Comparacion win / false pred value')
-  plt.show()
+  #fig,ax=plt.subplots(figsize=figsize)
+  #sns.histplot(dfx[dfx.goodpred==True].prob_win)
+  #sns.histplot(dfx[dfx.goodpred==False].prob_win)
+  #ax.set_title('Comparacion win / false pred value')
+  #plt.show()
 
   a = round(dfx.prob_win,1)
   b = dfx[['goodpred','prob_win']]
@@ -225,11 +224,27 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   fig, ax = plt.subplots(figsize=figsize)
   sns.barplot(x=b.index, y=b.false_over_total)
   ax.set_ylim(0,1)
-  plt.ylabel('Porcentaje falsos sobre (verdaderos + falsos)')
-  plt.xlabel('Proabilidad win ex.(0.5 = de 0.46 a 0.55)')
-  plt.title('Cálculo falsos sobre verdaderos según prob win')
+  plt.ylabel('Perc. false over total')
+  plt.xlabel('Prob. win ex.(0.5 = from 0.46 to 0.55)')
+  plt.title('Perc false / total by Prob win')
   plt.show()
 
+  clusters = dfx.cluster.unique()
+  for i in clusters:
+    temp1 = dfx[['goodpred','cluster','prob_win']].query(f'cluster == {i}')
+    temp1['prob_win'] = round(temp1.prob_win, 1)
+    temp1 = pd.get_dummies(temp1, columns=['goodpred'])
+    temp1 = temp1.groupby(['cluster','prob_win']).sum().reset_index()
+    temp1['false_over_total'] = temp1.goodpred_False / (temp1.goodpred_True + temp1.goodpred_False)
+  
+    fig,ax = plt.subplots(figsize=(5,3))
+    sns.barplot(data=temp1, x='prob_win', y='false_over_total')
+    ax.set_ylim(0,1)
+    plt.xlabel('Prob. Win ex.(0.5 = from 0.46 to 0.55)')
+    plt.ylabel('Perc. false over total')
+    plt.title(f'Perc. false / total. Cluster {i}')
+    plt.show()
+  
   return dfx
 
 
