@@ -88,7 +88,7 @@ class Features_encoder(BaseEstimator, TransformerMixin):
       '''
       df_1 = X.copy()
       if self.encoder1 == 0:
-        continue
+        print('No encoder 1\n')
       else:
         columns = ['c_f', 'region_b1', 'region_b2']
         for i in columns:
@@ -99,7 +99,7 @@ class Features_encoder(BaseEstimator, TransformerMixin):
           df_1.drop(columns=i, inplace=True)
 
       if self.encoder2 == 0:
-        continue
+        print('No encoder 2\n')
       else:
         columns = ['stance_b1', 'stance_b2']
         for i in columns:
@@ -110,7 +110,7 @@ class Features_encoder(BaseEstimator, TransformerMixin):
           df_1.drop(columns=i, inplace=True)
 
       if self.encoder3 == 0:
-        continue
+        print('No encoder 3\n')
       else:
         columns = ['boxstyle_b1', 'boxstyle_b2']
         for i in columns:
