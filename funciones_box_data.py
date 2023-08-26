@@ -28,11 +28,13 @@ def cross_val(model, X, y, cv=5, figsize=(5,3)):
   print(f'Test score: {cv_results["test_score"]}')
   print(f'Test mean score: {cv_results["test_score"].mean()}')
 
-  y_pred = cross_val_predict(model, X.values, y.values, cv=cv)
+  y_pred = cross_val_predict(model, X, y, cv=cv)
   conf_matrix = confusion_matrix(y, y_pred)
   plt.figure(figsize=figsize)
   sns.heatmap(conf_matrix, annot=True, fmt='d')
   plt.title('Confusion Matrix')
+  plt.ylabel('True')
+  plt.xlabel('Predicted')
   plt.show()
 
   fpr, tpr, _ = roc_curve(y, y_pred)
@@ -49,6 +51,7 @@ def cross_val(model, X, y, cv=5, figsize=(5,3)):
   plt.show()
 
   precision, recall, _ = precision_recall_curve(y, y_pred)
+  plt.figure(figsize=figsize)
   plt.step(recall, precision, color='b', alpha=0.2, where='post')
   plt.fill_between(recall, precision, step='post', alpha=0.2, color='b')
   plt.xlabel('Recall')
@@ -56,7 +59,7 @@ def cross_val(model, X, y, cv=5, figsize=(5,3)):
   plt.title('Precision-Recall curve')
   plt.show()
 
-  train_sizes, train_scores, test_scores = learning_curve(model, X.values, y.values, cv=cv)
+  train_sizes, train_scores, test_scores = learning_curve(model, X, y, cv=cv)
   train_scores_mean = np.mean(train_scores, axis=1)
   train_scores_std = np.std(train_scores, axis=1)
   test_scores_mean = np.mean(test_scores, axis=1)
@@ -74,8 +77,7 @@ def cross_val(model, X, y, cv=5, figsize=(5,3)):
   plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
            label="Training score")
   plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
-           label="Cross-validation score")
-  
+           label="Cross-validation score") 
   plt.legend(loc="best")
   plt.show()
 
