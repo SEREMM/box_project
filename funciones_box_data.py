@@ -127,7 +127,10 @@ class Data_clusterer(BaseEstimator, TransformerMixin):
     def __init__(self, model):
         '''
         Adhiere cluster creado por modelo seleccionado a dataframe base.
-        :model: Modelo cluster.
+        Parameters.
+          :model: Modelo cluster.
+        Returns:
+          None
         '''
         self.model = model
 
@@ -136,8 +139,11 @@ class Data_clusterer(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         '''
-        :X: dataframe base.
-        :return: df base con columna cluster adherida.
+        Use the cluster passed to predict.
+        Parameters:
+          :X: dataframe base.
+        Returns:
+          Df base con columna cluster adherida.
         '''
         clusters = self.model.predict(X)
         clusters = pd.Series(clusters, index=X.index, name='cluster')
@@ -170,18 +176,44 @@ class Model_applied(BaseEstimator, TransformerMixin):
     return df_pred
 
 
+def new_pred(X, fitted_encoder, fitted_cluster, fitted_scaler, fitted_model):
+  '''
+  Function that join the steps to bring a prediction for new data since before feature engineering process.
+  Parameters:
+    :X: First data to predict
+    :fitted_encoder: Object of class Features_encoder() initialized and fitted.
+    :fitted_cluster: Object of class Data_clusterer() initialized and fitted.
+    :fitted_scaler: Object of class StandardScaler() [or other scaler] initialized and fitted.
+    :fitted_model: Object of class Model_applied() initialized and fitted.
+  Returns:
+    DataFrame with columns ['boxer1_pred', 'prob_win', 'prob_loss', 'cluster', 'initial_index'].
+  '''
+  x0 = feat_eng(X)
+  x1 = fitted_encoder.transform(x0)
+  x_clustered = fitted_cluster.transform(x1)
+  x_scaled = fitted_scaler.transform(x_clustered)
+  y_pred = fitted_model.transform(x_scaled)
+  y_pred['initial_index'] = x_clustered.index
+  y_pred = y_pred.merge(x_clustered.cluster, how='left', left_on='initial_index', right_index=True)
+  y_pred = y_pred[['boxer1_pred','prob_win','cluster','prob_loss','initial_index']]
+
+  return y_pred
+
+
 def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figsize=(5,3)):
   '''
   Función para revisar errores, aciertos y probabilidades de modelo, según sus respectivos cluster.
-  :df_cluster: dataframe con columna de clusters.
-  :y_true: y verdadero.
-  :y_pred: y predicción.
-  :prob_loss: probabilidad boxer 1 pierde.
-  :prob_win: probabilidad boxer 1 gana.
-  :figsize=(5,3): figsize de las gráficas.
-  :return: df cluster con columnas true res, pred res, goodpred, prob loss, prob win.
-  :plot: conteo de falsos por verdaderos según clusters, Perc false / total by Prob win, Perc. false / total for the clusters.
-  :print: porcentaje de falsos por verdaderos según cada cluster.
+  Parameters:
+    :df_cluster: dataframe con columna de clusters.
+    :y_true: y verdadero.
+    :y_pred: y predicción.
+    :prob_loss: probabilidad boxer 1 pierde.
+    :prob_win: probabilidad boxer 1 gana.
+    :figsize=(5,3): figsize de las gráficas.
+  Returns:
+    :return: df cluster con columnas true res, pred res, goodpred, prob loss, prob win.
+    :plot: conteo de falsos por verdaderos según clusters, Perc false / total by Prob win, Perc. false / total for the clusters.
+    :print: porcentaje de falsos por verdaderos según cada cluster.
   '''
   dfx = df_cluster.copy()
   dfx['true_res'] = y_true.values
