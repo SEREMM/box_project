@@ -5,32 +5,79 @@ import seaborn as sns
 import pickle as pkl
 
 
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, cross_val_predict, learning_curve
+from sklearn.metrics import confusion_matrix, roc_curve, auc, precision_recall_curve
 
-def cross_val(model, x_1, x_2, y_1, y_2, cv=5):
+def cross_val(model, X, y, cv=5, figsize=(5,3)):
   '''
-  Función para hacer cross validate de modelos ml.
-  :model: modelo a revisar.
-  :x_1: data x 1 (entrenamiento).
-  :x_2: data x 2 (testeo).
-  :y_1: data y 1 (entrenamiento).
-  :y_2: data y 2 (testeo).
-  :cv: cross val folders, default=5.
-  :print: métricas de resultados.
+  Function to cross val ml models and check results.
+  Parameters:
+    :model: ml model.
+    :X: predictor data.
+    :y: data to predict.
+    :cv: cross val folders, default=5.
+    :figsize: Size of the plots, default=(5,3).
+  Returns:
+    :print: métricas de resultados.
+    :plot: Confusion matrix, roc curve, precision recall curve, learning curve.
   '''
-  try:
-    X = pd.concat([x_1, x_2])
-    y = pd.concat([y_1, y_2])
-  except TypeError:
-    X = pd.concat([pd.DataFrame(x_1), pd.DataFrame(x_2)])
-    y = pd.concat([y_1, y_2])
-
-  cv_results = cross_validate(model, X.values, y.values, cv=cv)
+  cv_results = cross_validate(model, X, y, cv=cv)
 
   print(f'Fit time mean: {cv_results["fit_time"].mean()}')
   print(f'Score time mean: {cv_results["score_time"].mean()}')
   print(f'Test score: {cv_results["test_score"]}')
   print(f'Test mean score: {cv_results["test_score"].mean()}')
+
+  y_pred = cross_val_predict(model, X.values, y.values, cv=cv)
+  conf_matrix = confusion_matrix(y, y_pred)
+  plt.figure(figsize=figsize)
+  sns.heatmap(conf_matrix, annot=True, fmt='d')
+  plt.title('Confusion Matrix')
+  plt.show()
+
+  fpr, tpr, _ = roc_curve(y, y_pred)
+  roc_auc = auc(fpr, tpr)
+  plt.figure(figsize=figsize)
+  plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.2f})')
+  plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+  plt.xlim([0.0, 1.0])
+  plt.ylim([0.0, 1.05])
+  plt.xlabel('False Positive Rate')
+  plt.ylabel('True Positive Rate')
+  plt.title('Receiver Operating Characteristic')
+  plt.legend(loc='lower right')
+  plt.show()
+
+  precision, recall, _ = precision_recall_curve(y, y_pred)
+  plt.step(recall, precision, color='b', alpha=0.2, where='post')
+  plt.fill_between(recall, precision, step='post', alpha=0.2, color='b')
+  plt.xlabel('Recall')
+  plt.ylabel('Precision')
+  plt.title('Precision-Recall curve')
+  plt.show()
+
+  train_sizes, train_scores, test_scores = learning_curve(model, X.values, y.values, cv=cv)
+  train_scores_mean = np.mean(train_scores, axis=1)
+  train_scores_std = np.std(train_scores, axis=1)
+  test_scores_mean = np.mean(test_scores, axis=1)
+  test_scores_std = np.std(test_scores, axis=1)
+  
+  plt.figure(figsize=figsize)
+  plt.title("Learning Curve")
+  plt.xlabel("Training examples")
+  plt.ylabel("Score")
+  plt.grid()
+  plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                   train_scores_mean + train_scores_std, alpha=0.1, color="r")
+  plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                   test_scores_mean + test_scores_std, alpha=0.1, color="g")
+  plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+           label="Training score")
+  plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+           label="Cross-validation score")
+  
+  plt.legend(loc="best")
+  plt.show()
 
 
 def feat_eng(df):
