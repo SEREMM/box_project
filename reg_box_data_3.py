@@ -2,7 +2,7 @@ import wikipediaapi
 import pandas as pd
 import numpy as np
 
-def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_list, b2_odds_list):
+def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_list, b2_odds_list, odds_type='a'):
   def odds_american_to_decimal(odds):
     lista_dec = []
     count = 0
@@ -19,9 +19,9 @@ def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_lis
         res = i
         lista_dec.append(res)
       if count == 0:
-        print(f'\nValor decimal apuesta a boxer 1: {res}\n')
+        print(f'\nValor decimal apuesta a boxer 1: {res}')
       elif count == 2:
-        print(f'\nValor decimal apuesta a boxer 2: {res}\n')
+        print(f'\nValor decimal apuesta a boxer 2: {res}')
       count += 1
     return lista_dec
 
@@ -32,9 +32,9 @@ def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_lis
       res = (i) + 1
       lista_dec.append(res)
       if count == 0:
-        print(f'\nValor decimal apuesta a boxer 1: {res}\n')
+        print(f'\nValor decimal apuesta a boxer 1: {res}')
       elif count == 2:
-        print(f'\nValor decimal apuesta a boxer 2: {res}\n')
+        print(f'\nValor decimal apuesta a boxer 2: {res}')
       count += 1
     return lista_dec
 
@@ -51,18 +51,17 @@ def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_lis
 
     return lista_dec_perc[0], lista_dec_perc[2]
 
-  def convertor_odds(b1_odds, draw_odds, b2_odds):
+  def convertor_odds(b1_odds, draw_odds, b2_odds, odds_tipo):
     b1 = b1_odds
     b2 = b2_odds
     draw = draw_odds
-    tipo = input('Odds in american (a), in fractional (f): ')
     lista = [b1,draw,b2]
-    if tipo == 'a':
+    if odds_tipo == 'a':
         tipo = 'american'
-    elif tipo == 'f':
+    elif odds_tipo == 'f':
         tipo = 'fractional'
     b1_bet, b2_bet = function_odds(lista, tipo)
-    print(f'\nb1 odds: {b1_bet}, b2 odds: {b2_bet}\n')
+    print(f'\nb1 odds: {b1_bet}, b2 odds: {b2_bet}')
     return b1_bet, b2_bet
 
   def reg_1(texto):
@@ -107,7 +106,7 @@ def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_lis
           data['text_boxer2'], data['summary_boxer2'], data['len_text_boxer2'], data['len_summary_boxer2'] = a,b,c,d
           current_key_value += 1
         elif (key_values[current_key_value][0] == 'odds'):
-          data['b1_bet'], data['b2_bet'] = convertor_odds(b1_odd, d_odd, b2_odd)
+          data['b1_bet'], data['b2_bet'] = convertor_odds(b1_odd, d_odd, b2_odd, odds_type)
           data['result'] = ''
           data['endtype'] = ''
           data['endround'] = ''
