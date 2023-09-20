@@ -81,8 +81,10 @@ def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_lis
 
   df = pd.DataFrame()
   for boxer1, b1_odd, d_odd, boxer2, b2_odd in zip(boxer1_list, b1_odds_list, draw_odds_list, boxer2_list, b2_odds_list):
-    continuar = input('Continuar agregando registros (y/n): ')
-    if continuar == 'y':
+    continuar = input('Continuar agregando registros (enter o y/n): ')
+    if continuar == 'n':
+      break
+    else:
       textos = {'boxer1':'','b1_w':'Number of win boxer1: ',
       'b1_wk':'Number of ko wins of boxer1: ','b1_d':'Number of draws of boxer1: ',
       'b1_l':'Number of loss of boxer1: ','b1_lk':'Number of ko loss of boxer1: ',
@@ -133,8 +135,6 @@ def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_lis
           else:
             data[key_values[current_key_value][0]] = [resp]
             current_key_value += 1
-    elif continuar == 'n':
-      break
       
   return df[['result', 'endtype', 'endround',
 'boxer1','b1_w','b1_wk', 'b1_d', 'b1_l', 'b1_lk', 'b1_bet',
