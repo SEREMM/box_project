@@ -82,54 +82,61 @@ def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_lis
 
   df = pd.DataFrame()
   for boxer1, b1_odd, d_odd, boxer2, b2_odd in zip(boxer1_list, b1_odds_list, draw_odds_list, boxer2_list, b2_odds_list):
-    textos = {'boxer1':'','b1_w':'Number of win boxer1: ',
-    'b1_wk':'Number of ko wins of boxer1: ','b1_d':'Number of draws of boxer1: ',
-    'b1_l':'Number of loss of boxer1: ','b1_lk':'Number of ko loss of boxer1: ',
-    'wiki_boxer1':'',
-    'boxer2':'','b2_w':'Number of win boxer2: ',
-    'b2_wk':'Number of ko wins of boxer2: ','b2_d':'Number of draws of boxer2: ',
-    'b2_l':'Number of loss of boxer2: ','b2_lk':'Number of ko loss of boxer2: ',
-    'wiki_boxer2':'', 'odds':''}
-
-    data = pd.DataFrame()
-    current_key_value = 0
-    key_values = list(textos.items())
-
-    while current_key_value < len(key_values):
-      if (key_values[current_key_value][0] == 'wiki_boxer1'):
-        a,b,c,d = reg_2(data['boxer1'])
-        data['text_boxer1'], data['summary_boxer1'], data['len_text_boxer1'], data['len_summary_boxer1'] = a,b,c,d
-        current_key_value += 1
-      elif (key_values[current_key_value][0] == 'wiki_boxer2'):
-        a,b,c,d = reg_2(data['boxer2'])
-        data['text_boxer2'], data['summary_boxer2'], data['len_text_boxer2'], data['len_summary_boxer2'] = a,b,c,d
-        current_key_value += 1
-      elif (key_values[current_key_value][0] == 'odds'):
-        data['b1_bet'], data['b2_bet'] = convertor_odds(b1_odd, d_odd, b2_odd)
-        data['result'] = ''
-        data['endtype'] = ''
-        data['endround'] = ''
-        df = pd.concat([df, data])
-        current_key_value += 1
-      elif (key_values[current_key_value][0] == 'boxer1'):
-        b1 = boxer1.lower()
-        data['boxer1'] = [b1]
-        print(f'boxer 1: {data.boxer1[0]}\n')
-        current_key_value += 1
-      elif (key_values[current_key_value][0] == 'boxer2'):
-        b2 = boxer2.lower()
-        data['boxer2'] = [b2]
-        print(f'boxer 2: {data.boxer2[0]}\n')
-        current_key_value += 1
-      else:
-        resp = reg_1(key_values[current_key_value][1])
-        if resp == 'd':
-          current_key_value -= 1
-          continue
-        else:
-          data[key_values[current_key_value][0]] = [resp]
+    continuar = input('Continuar agregando registros (y/n): ')
+    if continuar == 'y':
+      textos = {'boxer1':'','b1_w':'Number of win boxer1: ',
+      'b1_wk':'Number of ko wins of boxer1: ','b1_d':'Number of draws of boxer1: ',
+      'b1_l':'Number of loss of boxer1: ','b1_lk':'Number of ko loss of boxer1: ',
+      'wiki_boxer1':'',
+      'boxer2':'','b2_w':'Number of win boxer2: ',
+      'b2_wk':'Number of ko wins of boxer2: ','b2_d':'Number of draws of boxer2: ',
+      'b2_l':'Number of loss of boxer2: ','b2_lk':'Number of ko loss of boxer2: ',
+      'wiki_boxer2':'', 'odds':''}
+  
+      data = pd.DataFrame()
+      current_key_value = 0
+      key_values = list(textos.items())
+  
+      while current_key_value < len(key_values):
+        if (key_values[current_key_value][0] == 'wiki_boxer1'):
+          a,b,c,d = reg_2(data['boxer1'])
+          data['text_boxer1'], data['summary_boxer1'], data['len_text_boxer1'], data['len_summary_boxer1'] = a,b,c,d
           current_key_value += 1
-
+        elif (key_values[current_key_value][0] == 'wiki_boxer2'):
+          a,b,c,d = reg_2(data['boxer2'])
+          data['text_boxer2'], data['summary_boxer2'], data['len_text_boxer2'], data['len_summary_boxer2'] = a,b,c,d
+          current_key_value += 1
+        elif (key_values[current_key_value][0] == 'odds'):
+          data['b1_bet'], data['b2_bet'] = convertor_odds(b1_odd, d_odd, b2_odd)
+          data['result'] = ''
+          data['endtype'] = ''
+          data['endround'] = ''
+          df = pd.concat([df, data])
+          current_key_value += 1
+          print('\n' + '=' * 10 + '\n')
+        elif (key_values[current_key_value][0] == 'boxer1'):
+          b1 = boxer1.lower()
+          data['boxer1'] = [b1]
+          print(f'boxer 1: {data.boxer1[0]}\n')
+          current_key_value += 1
+        elif (key_values[current_key_value][0] == 'boxer2'):
+          b2 = boxer2.lower()
+          data['boxer2'] = [b2]
+          print(f'boxer 2: {data.boxer2[0]}\n')
+          current_key_value += 1
+        else:
+          resp = reg_1(key_values[current_key_value][1])
+          if resp == 'd':
+            current_key_value -= 1
+            continue
+          elif resp == 'c':
+            break
+          else:
+            data[key_values[current_key_value][0]] = [resp]
+            current_key_value += 1
+    elif continuar == 'n':
+      break
+      
   return df[['result', 'endtype', 'endround',
 'boxer1','b1_w','b1_wk', 'b1_d', 'b1_l', 'b1_lk', 'b1_bet',
 'text_boxer1', 'summary_boxer1','len_text_boxer1', 'len_summary_boxer1',
