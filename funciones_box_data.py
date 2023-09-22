@@ -237,6 +237,7 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   b['prob_win'] = a
   b = pd.get_dummies(b, columns=['goodpred'])
   b = b.groupby('prob_win').sum()
+  b[['goodpred_False','goodpred_True']] = b[['goodpred_False','goodpred_True']].astype(float)
   b['false_over_total'] = round(b.goodpred_False / (b.goodpred_False + b.goodpred_True), 2)
 
   fig, ax = plt.subplots(figsize=figsize)
