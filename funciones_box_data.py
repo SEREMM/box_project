@@ -23,7 +23,7 @@ def model_trainer(X, y, feat_eng_func, cluster, scaler, model):
     modelo_objeto: Model_applied object wich can predict and transform data, using transform
       to retreives a df with some columns about prediction.
   '''
-  x_0 = feat_eng_2(X)
+  x_0 = feat_eng_func(X)
   cluster.fit(x_0)
   cluster_trained = Data_clusterer(cluster)
   x_cluster = cluster_trained.transform(x_0)
