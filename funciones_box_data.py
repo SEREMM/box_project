@@ -255,6 +255,7 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
     temp1['prob_win'] = round(temp1.prob_win, 1)
     temp1 = pd.get_dummies(temp1, columns=['goodpred'])
     temp1 = temp1.groupby(['cluster','prob_win']).sum().reset_index()
+    temp1[['goodpred_False','goodpred_True']] = temp1[['goodpred_False','goodpred_True']].astype(float)
     try:
         temp1['false_over_total'] = temp1.goodpred_False / (temp1.goodpred_True + temp1.goodpred_False)
 
