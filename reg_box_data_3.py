@@ -73,11 +73,12 @@ def box_data_reg_from_list(boxer1_list, b1_odds_list, draw_odds_list, boxer2_lis
     wiki = wikipediaapi.Wikipedia('english')  # 'en' specifies the language (English in this case)
     page = wiki.page(boxer)
     text_boxer = page.text
-    if (f'{boxer} may refer') in text_boxer:
+    if ('may refer') in text_boxer:
       boxer = boxer_name.title().strip()+' '+'(boxer)'
       wiki = wikipediaapi.Wikipedia('english')
       page = wiki.page(boxer)
       text_boxer = page.text
+      print('may refer founded, (boxer) agregated to the name\n')
     summary_boxer = page.summary
     len_text_boxer = len(text_boxer)
     len_summary_boxer = len(summary_boxer)
