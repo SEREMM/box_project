@@ -5,6 +5,35 @@ import seaborn as sns
 import pickle as pkl
 
 
+def model_trainer(X, y, feat_eng_func, cluster, scaler, model):
+  '''
+  Train cluster, scaler and model for new preds.
+  Receives:
+    :X: Train data x.
+    :y: Train data y.
+    :feat_eng_func: Function to feature engineering data.
+    :cluster: Cluster to fit.
+    :scaler: Scaler to fit.
+    :model: Model to fit.
+  Returns:
+    cluster_trained.
+    scaler_trained.
+    model_trained.
+    x_cluster: Data received with column cluster.
+    modelo_objeto: Model_applied object wich can predict and transform data, using transform
+      to retreives a df with some columns about prediction.
+  '''
+  x_0 = feat_eng_2(X)
+  cluster.fit(x_0)
+  cluster_trained = Data_clusterer(cluster)
+  x_cluster = cluster_trained.transform(x_0)
+  scaler_trained = scaler.fit(x_cluster)
+  x_scaled = scaler_trained.transform(x_cluster)
+  model_trained = model.fit(x_scaled, y)
+  modelo_objeto = Model_applied(model_trained)
+  return cluster_trained, scaler_trained, model_trained, x_cluster, modelo_objeto 
+
+
 from sklearn.model_selection import cross_validate, cross_val_predict, learning_curve
 from sklearn.metrics import confusion_matrix, roc_curve, auc, precision_recall_curve
 
