@@ -287,8 +287,8 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
         temp1['true_over_total'] = round(temp1.goodpred_True / (temp1.goodpred_False + temp1.goodpred_True), 2)
 
         fig, ax = plt.subplots(figsize=figsize)
-        sns.barplot(x=temp1.index, y=temp1.false_over_total, color='white', edgecolor='red', linewidth=1.5, label='false')
-        sns.pointplot(x=temp1.index, y=temp1.true_over_total, color='#6B7FFF', label='true')
+        sns.barplot(x=temp1.prob_win, y=temp1.false_over_total, color='white', edgecolor='red', linewidth=1.5, label='false')
+        sns.pointplot(x=temp1.prob_win, y=temp1.true_over_total, color='#6B7FFF', label='true')
         ax.set_ylim(0,1)
         plt.legend()
         plt.ylabel('Percentage')
