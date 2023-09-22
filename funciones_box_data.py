@@ -138,9 +138,9 @@ class Model_applied(BaseEstimator, TransformerMixin):
     return df_pred
 
 
-def new_pred(X, fitted_encoder, fitted_cluster, fitted_scaler, fitted_model):
+def new_pred_1(X, fitted_encoder, fitted_cluster, fitted_scaler, fitted_model):
   '''
-  Function that join the steps to bring a prediction for new data since before feature engineering process.
+  Function that join the steps to bring a prediction for new data since before feature engineering process, with encoder.
   Parameters:
     :X: First data to predict
     :fitted_encoder: Object of class Features_encoder() initialized and fitted.
@@ -152,6 +152,30 @@ def new_pred(X, fitted_encoder, fitted_cluster, fitted_scaler, fitted_model):
   '''
   x0 = feat_eng(X)
   x1 = fitted_encoder.transform(x0)
+  x_clustered = fitted_cluster.transform(x1)
+  x_scaled = fitted_scaler.transform(x_clustered)
+  y_pred = fitted_model.transform(x_scaled)
+  y_pred['initial_index'] = x_clustered.index
+  y_pred = y_pred.merge(x_clustered.cluster, how='left', left_on='initial_index', right_index=True)
+  y_pred = y_pred[['boxer1_pred','prob_win','cluster','prob_loss','initial_index']]
+
+  return y_pred
+
+
+def new_pred_2(X, fitted_cluster, fitted_scaler, fitted_model):
+  '''
+  Function that join the steps to bring a prediction for new data since before feature engineering process, without encoder.
+  Parameters:
+    :X: First data to predict
+    :fitted_encoder: Object of class Features_encoder() initialized and fitted.
+    :fitted_cluster: Object of class Data_clusterer() initialized and fitted.
+    :fitted_scaler: Object of class StandardScaler() [or other scaler] initialized and fitted.
+    :fitted_model: Object of class Model_applied() initialized and fitted.
+  Returns:
+    DataFrame with columns ['boxer1_pred', 'prob_win', 'prob_loss', 'cluster', 'initial_index'].
+  '''
+  x0 = feat_eng_2(X)
+  x1 = x0 # fitted_encoder.transform(x0)
   x_clustered = fitted_cluster.transform(x1)
   x_scaled = fitted_scaler.transform(x_clustered)
   y_pred = fitted_model.transform(x_scaled)
