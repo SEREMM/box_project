@@ -212,7 +212,7 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   counts = dfx.groupby(['cluster', 'goodpred']).size().reset_index(name='count')
 
   plt.figure(figsize=figsize)
-  plt.bar(counts.index, counts['count'])
+  plt.bar(counts.index, counts['count'], color='white', edgecolor='blue', linewidth=2.5)
   labels = [f'Cluster {c}, GoodPred {g}' for c, g in zip(counts['cluster'], counts['goodpred'])]
   plt.xticks(counts.index, labels, rotation=90)
   plt.xlabel('Cluster and GoodPred')
@@ -226,12 +226,6 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   perc_false_per_true_by_cluster = counts.groupby('cluster').apply(lambda x: x[x['goodpred'] == False]['count'].sum() / x[x['goodpred'] == True]['count'].sum())
   print(perc_false_per_true_by_cluster)
 
-  #fig,ax=plt.subplots(figsize=figsize)
-  #sns.histplot(dfx[dfx.goodpred==True].prob_win)
-  #sns.histplot(dfx[dfx.goodpred==False].prob_win)
-  #ax.set_title('Comparacion win / false pred value')
-  #plt.show()
-
   a = round(dfx.prob_win,1)
   b = dfx[['goodpred','prob_win']]
   b['prob_win'] = a
@@ -239,13 +233,16 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
   b = b.groupby('prob_win').sum()
   b[['goodpred_False','goodpred_True']] = b[['goodpred_False','goodpred_True']].astype(float)
   b['false_over_total'] = round(b.goodpred_False / (b.goodpred_False + b.goodpred_True), 2)
+  b['true_over_total'] = round(b.goodpred_True / (b.goodpred_False + b.goodpred_True), 2)
 
   fig, ax = plt.subplots(figsize=figsize)
-  sns.barplot(x=b.index, y=b.false_over_total)
+  sns.barplot(x=b.index, y=b.false_over_total, color='white', edgecolor='red', linewidth=1.5, label='false')
+  sns.pointplot(x=b.index, y=b.true_over_total, color='#6B7FFF', label='true')
   ax.set_ylim(0,1)
-  plt.ylabel('Perc. false over total')
+  plt.legend()
+  plt.ylabel('Percentage')
   plt.xlabel('Prob. win ex.(0.5 = from 0.46 to 0.55)')
-  plt.title('Perc false / total by Prob win')
+  plt.title('Perc False - true / total by Prob win')
   plt.show()
 
   clusters = dfx.cluster.unique()
@@ -255,18 +252,21 @@ def check_fails_and_probas(df_cluster, y_true, y_pred, prob_loss, prob_win, figs
     temp1['prob_win'] = round(temp1.prob_win, 1)
     temp1 = pd.get_dummies(temp1, columns=['goodpred'])
     temp1 = temp1.groupby(['cluster','prob_win']).sum().reset_index()
-    temp1[['goodpred_False','goodpred_True']] = temp1[['goodpred_False','goodpred_True']].astype(float)
     try:
-        temp1['false_over_total'] = temp1.goodpred_False / (temp1.goodpred_True + temp1.goodpred_False)
+        temp1[['goodpred_False','goodpred_True']] = temp1[['goodpred_False','goodpred_True']].astype(float)
+        temp1['false_over_total'] = round(temp1.goodpred_False / (temp1.goodpred_True + temp1.goodpred_False), 2)
+        temp1['true_over_total'] = round(temp1.goodpred_True / (temp1.goodpred_False + temp1.goodpred_True), 2)
 
-        fig,ax = plt.subplots(figsize=(figsize))
-        sns.barplot(data=temp1, x='prob_win', y='false_over_total')
+        fig, ax = plt.subplots(figsize=figsize)
+        sns.barplot(x=temp1.index, y=temp1.false_over_total, color='white', edgecolor='red', linewidth=1.5, label='false')
+        sns.pointplot(x=temp1.index, y=temp1.true_over_total, color='#6B7FFF', label='true')
         ax.set_ylim(0,1)
+        plt.legend()
+        plt.ylabel('Percentage')
         plt.xlabel('Prob. Win ex.(0.5 = from 0.46 to 0.55)')
-        plt.ylabel('Perc. false over total')
-        plt.title(f'Perc. false / total. Cluster {i}')
+        plt.title(f'False-true / total by probab. Cluster {i}')
         plt.show()
-    except AttributeError:
+    except (AttributeError, KeyError):
         print(f'\n::: Attribute error in cluster: {i} :::\n')
 
   return dfx
@@ -276,27 +276,29 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 
 
-def plot_clusters(clusters, dim_reduct_values, cmap="Set2", figsize=(5,3)):
+def plot_clusters(clusters, dim_reduct_values, cmap="Set2", figsize=(5, 3)):
     """
     Plots the projection of the features colored by clusters.
-
-    Parameters:
+    Receives:
         clusters (numpy array): The clusters of the data.
-        dim_reduct_values (numpy array): The dimensionality reducted values of features.
+        dim_reduct_values (numpy array): The dimensionality-reduced values of features.
         cmap (str or colormap, optional): The colormap for coloring clusters. Default is "Set2".
-        figsize (tuple, optional): The size of the plot. default is (5,3).
-
+        figsize (tuple, optional): The size of the plot. Default is (5, 3).
     Returns:
         None (displays the plot).
     """
     cmap = plt.get_cmap(cmap)
-
     n_clusters = np.unique(clusters).shape[0]
-
-    fig = plt.figure(figsize=figsize)
-    # Plot the dimensionality-reduced features on a 2D plane
-    plt.scatter(dim_reduct_values[:, 0], dim_reduct_values[:, 1],
-                c=[cmap(x/n_clusters) for x in clusters], s=40, alpha=.4)
+    fig, ax = plt.subplots(figsize=figsize)
+    scatter = ax.scatter(dim_reduct_values[:, 0], dim_reduct_values[:, 1],
+                         c=[cmap(x / n_clusters) for x in clusters], s=40, alpha=.4)
+    
+    # Calculate and plot the cluster centers as text
+    for cluster_id in range(n_clusters):
+        cluster_points = dim_reduct_values[clusters == cluster_id]
+        cluster_center = np.mean(cluster_points, axis=0)
+        ax.text(cluster_center[0], cluster_center[1], str(cluster_id), fontsize=12,
+                ha='center', va='center', color='black', weight='bold') 
     plt.title('dim reduct projection of values, colored by clusters', fontsize=14)
     plt.show()
 
