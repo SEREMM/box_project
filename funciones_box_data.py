@@ -153,6 +153,56 @@ class Model_applied(BaseEstimator, TransformerMixin):
   def fit(self, X, y=None):
     return self
 
+  def fiabilidad(self, col_prob, col_clus):
+    fiable = []
+    datos = []
+    for p, c in zip(col_prob, col_clus):
+      if c == 0:
+        datos.append('mucha data (1239 data clus, 1672 data total, 74 %)')
+        if (p > .75) | (p < .25):
+          fiable.append('muy fiable acierta en + de 80 %')
+        elif (p > .46) & (p < .55):
+          fiable.append('no fiable, acierta en un 50 %')
+        else:
+          fiable.append('fiable, acierta en + de 70 %')
+      
+      if c == 1:
+        datos.append('poca data (207 data clus, 1672 data total, 12 %)')
+        if (p < .25):
+          fiable.append('muy fiable acierta en + de 80 %')
+        elif (p > .70):
+          fiable.append('no medido')
+        elif (p > .46) & (p < .55):
+          fiable.append('no fiable, acierta en un - 40 %')
+        else:
+          fiable.append('fiable, acierta en + de 70 %')
+  
+      if c == 2:
+        datos.append('poca data (189 data clus, 1672 data total, 11 %)')
+        if (p < .25):
+          fiable.append('no medido')
+        elif (p > .65):
+          fiable.append('muy fiable, acierta + de 80 %')
+        elif (p > .25) & (p < .45):
+          fiable.append('no fiable, acierta en - 40 % hasta - 80 %, contrario')
+        else:
+          fiable.append('fiable, acierta en + de 70 %')
+  
+      if c == 3:
+        datos.append('muy poca data (19 data clus, 1672 data total, 1 %)')
+        fiable.append('nunca se equivoco')
+  
+      if c == 4:
+        datos.append('muy poca data (18 data clus, 1672 data total, 1 %)')
+        if (p < .55):
+          fiable.append('no medido')
+        elif (p > .65):
+          fiable.append('muy fiable, acierta + de 80 %')
+        else:
+          fiable.append('no fiable, acierta en -.50 a -.80, contrario')
+  
+    return fiable, datos
+
   def transform(self, X):
     '''
     :X: dataframe base.
@@ -164,6 +214,8 @@ class Model_applied(BaseEstimator, TransformerMixin):
     df_pred['boxer1_pred'] = pred_new
     df_pred['prob_win'] = probabilities[:,1]
     df_pred['prob_loss'] = probabilities[:,0]
+    df_pred['fiabilidad'], df_pred['cantidad_datos'] = self.fiabilidad(df_pred.prob_win, df_pred.cluster)
+
     return df_pred
 
 
