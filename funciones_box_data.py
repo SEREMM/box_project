@@ -153,6 +153,42 @@ class Model_applied(BaseEstimator, TransformerMixin):
   def fit(self, X, y=None):
     return self
 
+  def transform(self, X):
+    '''
+    :X: dataframe base.
+    :return: df base con columna predicción y columnas probabilidades.
+    '''
+    df_pred = pd.DataFrame()
+    pred_new = self.model.predict(X)
+    probabilities = self.model.predict_proba(X)
+    df_pred['boxer1_pred'] = pred_new
+    df_pred['prob_win'] = probabilities[:,1]
+    df_pred['prob_loss'] = probabilities[:,0]
+
+    return df_pred
+
+
+def new_pred_1(X, feature_eng_func, fitted_encoder, fitted_cluster, fitted_scaler, fitted_model):
+  '''
+  Function that join the steps to bring a prediction for new data since before feature engineering process, with encoder.
+  Parameters:
+    :X: First data to predict.
+    :feature_eng_func: Function to feature engineering.
+    :fitted_encoder: Object of class Features_encoder() initialized and fitted.
+    :fitted_cluster: Object of class Data_clusterer() initialized and fitted.
+    :fitted_scaler: Object of class StandardScaler() [or other scaler] initialized and fitted.
+    :fitted_model: Object of class Model_applied() initialized and fitted.
+  Returns:
+    DataFrame with columns .
+  '''
+  x0 = feature_eng_func(X)
+  x1 = fitted_encoder.transform(x0)
+  x_clustered = fitted_cluster.transform(x1)
+  x_scaled = fitted_scaler.transform(x_clustered)
+  y_pred = fitted_model.transform(x_scaled)
+  y_pred['initial_index'] = x_clustered.index
+  y_pred = y_pred.merge(x_clustered.cluster, how='left', left_on='initial_index', right_index=True)
+  
   def fiabilidad(self, col_prob, col_clus):
     fiable = []
     datos = []
@@ -203,43 +239,9 @@ class Model_applied(BaseEstimator, TransformerMixin):
   
     return fiable, datos
 
-  def transform(self, X):
-    '''
-    :X: dataframe base.
-    :return: df base con columna predicción y columnas probabilidades.
-    '''
-    df_pred = pd.DataFrame()
-    pred_new = self.model.predict(X)
-    probabilities = self.model.predict_proba(X)
-    df_pred['boxer1_pred'] = pred_new
-    df_pred['prob_win'] = probabilities[:,1]
-    df_pred['prob_loss'] = probabilities[:,0]
-    df_pred['fiabilidad'], df_pred['cantidad_datos'] = self.fiabilidad(df_pred.prob_win, df_pred.cluster)
-
-    return df_pred
-
-
-def new_pred_1(X, feature_eng_func, fitted_encoder, fitted_cluster, fitted_scaler, fitted_model):
-  '''
-  Function that join the steps to bring a prediction for new data since before feature engineering process, with encoder.
-  Parameters:
-    :X: First data to predict.
-    :feature_eng_func: Function to feature engineering.
-    :fitted_encoder: Object of class Features_encoder() initialized and fitted.
-    :fitted_cluster: Object of class Data_clusterer() initialized and fitted.
-    :fitted_scaler: Object of class StandardScaler() [or other scaler] initialized and fitted.
-    :fitted_model: Object of class Model_applied() initialized and fitted.
-  Returns:
-    DataFrame with columns ['boxer1_pred', 'prob_win', 'prob_loss', 'cluster', 'initial_index'].
-  '''
-  x0 = feature_eng_func(X)
-  x1 = fitted_encoder.transform(x0)
-  x_clustered = fitted_cluster.transform(x1)
-  x_scaled = fitted_scaler.transform(x_clustered)
-  y_pred = fitted_model.transform(x_scaled)
-  y_pred['initial_index'] = x_clustered.index
-  y_pred = y_pred.merge(x_clustered.cluster, how='left', left_on='initial_index', right_index=True)
-  y_pred = y_pred[['boxer1_pred','prob_win','cluster','prob_loss','initial_index']]
+  
+  y_pred['reliability'], y_pred['data_amount'] = self.fiabilidad(y_pred.prob_win, y_pred.cluster)
+  y_pred = y_pred[['boxer1_pred','prob_win','cluster','reliability','data_amount','prob_loss','initial_index']]
 
   return y_pred
 
