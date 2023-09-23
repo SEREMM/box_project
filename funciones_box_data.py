@@ -239,7 +239,6 @@ def new_pred_1(X, feature_eng_func, fitted_encoder, fitted_cluster, fitted_scale
   
     return fiable, datos
 
-  
   y_pred['reliability'], y_pred['data_amount'] = self.fiabilidad(y_pred.prob_win, y_pred.cluster)
   y_pred = y_pred[['boxer1_pred','prob_win','cluster','reliability','data_amount','prob_loss','initial_index']]
 
