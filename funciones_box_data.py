@@ -168,7 +168,7 @@ class Model_applied(BaseEstimator, TransformerMixin):
     return df_pred
 
 
-  def fiabilidad(self, col_prob, col_clus):
+  def fiabilidad(col_prob, col_clus):
     fiable = []
     datos = []
     for p, c in zip(col_prob, col_clus):
