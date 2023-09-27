@@ -1,6 +1,4 @@
 import requests
-# from lxml import html
-# from bs4 import BeautifulSoup
 import wikipediaapi
 import pandas as pd
 import numpy as np
