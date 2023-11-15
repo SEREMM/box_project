@@ -1,7 +1,8 @@
 # box_project
 
-![image](https://github.com/SEREMM/box_project/assets/71859483/f0736a35-7dbf-4a30-9b64-5f814a678b76)
-![image](https://github.com/SEREMM/box_project/assets/71859483/99d36b3b-bda2-4da7-a1cb-b72baeb1534a)
+![image](https://github.com/SEREMM/box_project/assets/71859483/b8aedb3f-194f-4866-962d-20507f4df812)
+![image](https://github.com/SEREMM/box_project/assets/71859483/c6c591e8-3fd9-406c-acea-b6a0e792413a)
+![image](https://github.com/SEREMM/box_project/assets/71859483/d9008d5a-e783-4f2b-82ea-9cc855b59ea6)
 
 ## 🥊 Welcome to the Box Project: Unveiling the Art of Boxing Predictions! 🥊
 
