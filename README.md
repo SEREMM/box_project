@@ -1,5 +1,6 @@
 # box_project
 
+![MACHINE LEARNING MODEL FOR BOXING PREDICTIONS](https://github.com/SEREMM/box_project/assets/71859483/c8077931-f598-4d8c-8b5f-1ebfb166c768)
 ![image](https://github.com/SEREMM/box_project/assets/71859483/b8aedb3f-194f-4866-962d-20507f4df812)
 ![image](https://github.com/SEREMM/box_project/assets/71859483/c6c591e8-3fd9-406c-acea-b6a0e792413a)
 ![image](https://github.com/SEREMM/box_project/assets/71859483/d9008d5a-e783-4f2b-82ea-9cc855b59ea6)
