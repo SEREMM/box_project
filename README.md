@@ -17,10 +17,10 @@ In this exciting endeavor, I've embarked on a journey to predict whether a boxer
 My methodology is grounded in my knowledge and fueled by inspiration from the enlightening book, "Building ML Powered Applications" by Emmanuel Ameisen (O'Reilly). This invaluable resource has guided me in creating efficient workflows and pipelines for this iterative data science project.
 
 ### 📁 Project Contents
-Inside, you'll discover a treasure trove of notebooks where I've meticulously crafted the predictive models. I've also curated ipnyb files housing the reusable functions that keep the notebooks streamlined and efficient (It's like they were .py files, but for the convenience of doing it in the cloud and testing on virtual machines, I made them in Google Colaboratory notebooks, running them in another file using %run '......'). It's all about making the complex world of data science approachable.
+Contained within this repository are an array of meticulously designed notebooks, each housing intricately crafted predictive models. Additionally, I've curated Py files hosting a collection of reusable functions tailored to streamline and optimize the notebooks' efficiency. I use google colab for cloud-based development and seamless testing on virtual machines. I've created a structured workflow for data processing, facilitating transformations, and preparing the data for machine learning models. This approach aims to simplify the intricate realm of data science, making it more accessible and navigable for comprehensive data processing, empowering the generation of informed predictions.
 
 ### 🚀 Explore and Contribute
 Dive into the notebooks, explore the code, and join me on this exhilarating journey. Whether you're a seasoned data scientist or a curious enthusiast, there's something here for everyone.
 
 ### 🤔 Troubleshooting
-Got questions or eager to lend a hand? Don't hesitate to reach out to me at seremm@outlook.com or via instagram @sergemm.data.inv . Together, we can unravel the mysteries of the boxing world!
+Got questions or eager to lend a hand? Don't hesitate to reach out to me at "seremm@outlook.com", via instagram "@sergemm.data.inv", or via "https://www.linkedin.com/in/sergio-emmanuel-ordaz-lópez-26b613123/" Together, we can unravel the mysteries of the boxing world!
